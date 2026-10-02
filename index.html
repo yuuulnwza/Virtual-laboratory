@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ห้องทดลองปฏิกิริยาการเกิดตะกอน</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #dff6ff, #eef2ff);
+    color: #172033;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px #0001;
+}
+
+header h1 {
+    margin: 0;
+    color: #2563eb;
+}
+
+.lab {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px #0001;
+}
+
+/* ขั้นตอน */
+.steps {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.step {
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #e5e7eb;
+    font-size: 14px;
+}
+
+.step.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* โต๊ะทดลอง */
+.bench {
+    height: 330px;
+    border-radius: 18px;
+    background: linear-gradient(
+        #dff6ff 0%,
+        #dff6ff 65%,
+        #cbd5e1 65%,
+        #cbd5e1 100%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* หลอดทดลอง */
+.test-tube {
+    width: 110px;
+    height: 230px;
+    border: 6px solid #94a3b8;
+    border-top: none;
+    border-radius: 0 0 50px 50px;
+    background: #ffffff66;
+    position: relative;
+    overflow: hidden;
+}
+
+.solution {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65%;
+    background: #60a5fa;
+    border-radius: 0 0 42px 42px;
+    transition: 0.7s;
+}
+
+.dropper {
+    position: absolute;
+    right: 20%;
+    top: 10%;
+    font-size: 45px;
+    transition: 0.5s;
+}
+
+.dropper.active {
+    transform: translateY(80px);
+}
+
+/* อนุภาค */
+.particle {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: white;
+    animation: float 2s infinite alternate;
+}
+
+@keyframes float {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-15px);
+    }
+}
+
+/* ตัวควบคุม */
+.controls {
+    margin-top: 15px;
+}
+
+select,
+button {
+    width: 100%;
+    min-height: 45px;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.reset {
+    background: #64748b;
+}
+
+/* สมุดบันทึก */
+.info {
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 12px;
+}
+
+.score {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.result {
+    min-height: 60px;
+    font-weight: bold;
+    line-height: 1.7;
+}
+
+.knowledge {
+    background: #eff6ff;
+    padding: 15px;
+    border-radius: 15px;
+    line-height: 1.6;
+}
+
+/* มือถือ */
+@media (max-width: 700px) {
+
+    .lab {
+        grid-template-columns: 1fr;
+    }
+
+    .bench {
+        height: 280px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>🔬 ห้องทดลองปฏิกิริยาการเกิดตะกอน</h1>
+    <p>เกมจำลองการทดลองปฏิกิริยาในสารละลาย</p>
+</header>
+
+<div class="lab">
+
+<!-- ห้องทดลอง -->
+<section class="card">
+
+    <div class="steps">
+        <div class="step active" id="step1">
+            1 เลือกสาร
+        </div>
+
+        <div class="step" id="step2">
+            2 เทสาร
+        </div>
+
+        <div class="step" id="step3">
+            3 คนสาร
+        </div>
+
+        <div class="step" id="step4">
+            4 วิเคราะห์
+        </div>
+    </div>
+
+    <div class="bench">
+
+        <div class="dropper" id="dropper">
+            💧
+        </div>
+
+        <div class="test-tube">
+
+            <div
+                class="solution"
+                id="solution">
+            </div>
+
+            <div id="particles"></div>
+
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+        <label>
+            🧪 สารละลายที่ 1
+        </label>
+
+        <select id="solutionA">
+
+            <option value="cu">
+                CuSO₄ — คอปเปอร์(II) ซัลเฟต
+            </option>
+
+            <option value="fe">
+                FeCl₃ — เหล็ก(III) คลอไรด์
+            </option>
+
+            <option value="ag">
+                AgNO₃ — เงินไนเตรต
+            </option>
+
+        </select>
+
+
+        <label>
+            🧪 สารละลายที่ 2
+        </label>
+
+        <select id="solutionB">
+
+            <option value="naoh">
+                NaOH — โซเดียมไฮดรอกไซด์
+            </option>
+
+            <option value="nacl">
+                NaCl — โซเดียมคลอไรด์
+            </option>
+
+            <option value="ki">
+                KI — โพแทสเซียมไอโอไดด์
+            </option>
+
+        </select>
+
+
+        <button id="pour">
+            🧪 2. เทสารลงหลอดทดลอง
+        </button>
+
+        <button id="stir" disabled>
+            🌀 3. คนสารละลาย
+        </button>
+
+        <button id="analyze" disabled>
+            🔎 4. วิเคราะห์ผล
+        </button>
+
+        <button
+            class="reset"
+            id="reset">
+            🔄 เริ่มการทดลองใหม่
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- สมุดบันทึก -->
+<section class="card">
+
+    <h2>📋 สมุดบันทึก</h2>
+
+    <div class="info">
+
+        <small>คะแนน</small>
+
+        <div
+            class="score"
+            id="score">
+            0 คะแนน
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <small>ขั้นตอนปัจจุบัน</small>
+
+        <div id="status">
+            เลือกสารละลาย 2 ชนิด
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <small>ผลการทดลอง</small>
+
+        <div
+            class="result"
+            id="result">
+            ยังไม่ได้ทดลอง
+        </div>
+
+    </div>
+
+
+    <div class="knowledge">
+
+        <b>📘 ความรู้</b>
+
+        <p>
+            เมื่อสารละลายบางคู่ทำปฏิกิริยากัน
+            อาจเกิดสารที่ไม่ละลายน้ำ
+            และตกลงมา เรียกว่า
+            <b>ตะกอน (Precipitate)</b>
+        </p>
+
+        <p>
+            สีของตะกอนสามารถใช้เป็นข้อมูล
+            ในการสังเกตและวิเคราะห์ผลการทดลอง
+        </p>
+
+    </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   ข้อมูลปฏิกิริยา
+========================= */
+
+const reactions = {
+
+    "cu-naoh": {
+
+        color: "#60a5fa",
+
+        text:
+        "เกิดตะกอน Cu(OH)₂ สีน้ำเงิน",
+
+        equation:
+        "CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄"
+
+    },
+
+
+    "ag-nacl": {
+
+        color: "#eeeeee",
+
+        text:
+        "เกิดตะกอน AgCl สีขาว",
+
+        equation:
+        "AgNO₃ + NaCl → AgCl↓ + NaNO₃"
+
+    },
+
+
+    "ag-ki": {
+
+        color: "#facc15",
+
+        text:
+        "เกิดตะกอน AgI สีเหลือง",
+
+        equation:
+        "AgNO₃ + KI → AgI↓ + KNO₃"
+
+    },
+
+
+    "fe-naoh": {
+
+        color: "#a16207",
+
+        text:
+        "เกิดตะกอน Fe(OH)₃ สีน้ำตาลแดง",
+
+        equation:
+        "FeCl₃ + 3NaOH → Fe(OH)₃↓ + 3NaCl"
+
+    },
+
+
+    "cu-nacl": {
+
+        color: "#60a5fa",
+
+        text:
+        "ไม่เกิดตะกอนใหม่อย่างชัดเจน",
+
+        equation:
+        "ไม่เกิดปฏิกิริยาการตกตะกอนที่สังเกตได้"
+
+    },
+
+
+    "fe-nacl": {
+
+        color: "#facc15",
+
+        text:
+        "ไม่เกิดตะกอนใหม่อย่างชัดเจน",
+
+        equation:
+        "ไม่เกิดปฏิกิริยาการตกตะกอนที่สังเกตได้"
+
+    },
+
+
+    "cu-ki": {
+
+        color: "#b91c1c",
+
+        text:
+        "เกิดการเปลี่ยนแปลงและเกิดผลิตภัณฑ์ใหม่",
+
+        equation:
+        "เกิดปฏิกิริยารีดอกซ์และมีการเปลี่ยนสี"
+
+    },
+
+
+    "fe-ki": {
+
+        color: "#7c2d12",
+
+        text:
+        "เกิดการเปลี่ยนแปลงของสารละลาย",
+
+        equation:
+        "เกิดปฏิกิริยารีดอกซ์"
+
+    }
+
+};
+
+
+/* =========================
+   ตัวแปร
+========================= */
+
+let score = 0;
+
+
+/* =========================
+   Element
+========================= */
+
+const solutionA =
+    document.getElementById("solutionA");
+
+const solutionB =
+    document.getElementById("solutionB");
+
+const pour =
+    document.getElementById("pour");
+
+const stir =
+    document.getElementById("stir");
+
+const analyze =
+    document.getElementById("analyze");
+
+const reset =
+    document.getElementById("reset");
+
+const solution =
+    document.getElementById("solution");
+
+const dropper =
+    document.getElementById("dropper");
+
+const particles =
+    document.getElementById("particles");
+
+const result =
+    document.getElementById("result");
+
+const status =
+    document.getElementById("status");
+
+const scoreText =
+    document.getElementById("score");
+
+
+/* =========================
+   ฟังก์ชัน
+========================= */
+
+function getReaction() {
+
+    const key =
+        solutionA.value +
+        "-" +
+        solutionB.value;
+
+    return reactions[key];
+
+}
+
+
+function setStep(number) {
+
+    for (let i = 1; i <= 4; i++) {
+
+        document
+            .getElementById("step" + i)
+            .classList.remove("active");
+
+    }
+
+    document
+        .getElementById("step" + number)
+        .classList.add("active");
+
+}
+
+
+/* =========================
+   เทสาร
+========================= */
+
+pour.addEventListener("click", function () {
+
+    dropper.classList.add("active");
+
+    solution.style.height = "70%";
+
+    status.innerText =
+        "เทสารเรียบร้อย — พร้อมคนสาร";
+
+    result.innerText =
+        "สารละลายถูกเทลงในหลอดทดลองแล้ว";
+
+    pour.disabled = true;
+
+    stir.disabled = false;
+
+    setStep(2);
+
+});
+
+
+/* =========================
+   คนสาร
+========================= */
+
+stir.addEventListener("click", function () {
+
+    const reaction =
+        getReaction();
+
+    solution.style.background =
+        reaction.color;
+
+    solution.style.transform =
+        "rotate(4deg)";
+
+    setTimeout(function () {
+
+        solution.style.transform =
+            "rotate(-4deg)";
+
+    }, 200);
+
+
+    setTimeout(function () {
+
+        solution.style.transform =
+            "rotate(0deg)";
+
+    }, 400);
+
+
+    /* สร้างอนุภาค */
+
+    particles.innerHTML = "";
+
+    for (let i = 0; i < 15; i++) {
+
+        const particle =
+            document.createElement("div");
+
+        particle.className =
+            "particle";
+
+        particle.style.left =
+            (10 + Math.random() * 80) + "%";
+
+        particle.style.top =
+            (15 + Math.random() * 70) + "%";
+
+        particle.style.animationDelay =
+            (Math.random() * 1.5) + "s";
+
+        particles.appendChild(
+            particle
+        );
+
+    }
+
+
+    status.innerText =
+        "คนสารแล้ว — สังเกตการเปลี่ยนแปลง";
+
+    result.innerText =
+        "สังเกตสีของสารละลายและตะกอน แล้วกดวิเคราะห์";
+
+    stir.disabled = true;
+
+    analyze.disabled = false;
+
+    setStep(3);
+
+});
+
+
+/* =========================
+   วิเคราะห์
+========================= */
+
+analyze.addEventListener("click", function () {
+
+    const reaction =
+        getReaction();
+
+    result.innerHTML =
+        "🧪 " +
+        reaction.text +
+        "<br><br>" +
+
+        "<small>" +
+        "สมการเคมี: " +
+        reaction.equation +
+        "</small>";
+
+    score += 10;
+
+    scoreText.innerText =
+        score + " คะแนน";
+
+    status.innerText =
+        "วิเคราะห์ผลเสร็จแล้ว";
+
+    analyze.disabled = true;
+
+    setStep(4);
+
+});
+
+
+/* =========================
+   เริ่มใหม่
+========================= */
+
+reset.addEventListener("click", function () {
+
+    solution.style.background =
+        "#60a5fa";
+
+    solution.style.height =
+        "65%";
+
+    solution.style.transform =
+        "rotate(0deg)";
+
+    dropper.classList.remove(
+        "active"
+    );
+
+    particles.innerHTML = "";
+
+    result.innerText =
+        "ยังไม่ได้ทดลอง";
+
+    status.innerText =
+        "เลือกสารละลาย 2 ชนิด";
+
+    pour.disabled = false;
+
+    stir.disabled = true;
+
+    analyze.disabled = true;
+
+    setStep(1);
+
+});
+
+
+/* เปลี่ยนสาร = เริ่มทดลองใหม่ */
+
+solutionA.addEventListener(
+    "change",
+    function () {
+
+        reset.click();
+
+    }
+);
+
+
+solutionB.addEventListener(
+    "change",
+    function () {
+
+        reset.click();
+
+    }
+);
+
+</script>
+
+</body>
+  </html>
